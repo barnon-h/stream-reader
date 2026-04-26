@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install valgrind
+        run: sudo apt-get install -y valgrind
+
+      - name: Build
+        run: make
+
+      - name: Run on commercial sample
+        run: ./stream-reader samples/commercial.txt
+
+      - name: Run on content sample
+        run: ./stream-reader samples/content.txt
+
+      - name: Valgrind check
+        run: valgrind --leak-check=full --error-exitcode=1 ./stream-reader samples/commercial.txt
